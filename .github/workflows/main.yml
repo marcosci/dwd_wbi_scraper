@@ -37,7 +37,7 @@ jobs:
         R -e 'install.packages("rcartocolor")'
     # Run R script
     - name: Scrape
-      run: Rscript scooter_scraping.R
+      run: Rscript scrape_wbi.R
       
  # Add new files in data folder, commit along with other modified files, push
     - name: Commit files
