@@ -1,5 +1,5 @@
-# Let's scrape Freiburgs Scooter!
-name: scooterscraping
+# Let's scrape DWD data!
+name: dwd_wbi
 
 on:
   schedule:
