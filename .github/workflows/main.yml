@@ -3,11 +3,11 @@ name: dwd_wbi
 
 on:
   schedule:
-    - cron:  '0 10 * * *' # Every day at 10 am. Ref https://crontab.guru/examples.html
+    - cron:  '* * * * *' # Every day at 10 am. Ref https://crontab.guru/examples.html
 
 jobs: 
   autoscrape:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     # Load repo and install R
     steps:
