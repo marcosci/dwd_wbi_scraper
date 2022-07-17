@@ -13,12 +13,17 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: r-lib/actions/setup-r@master
-
-    # Set-up R
-    - name: Install packages
+    
+    # Set-up 
+    - name: Setup
       run: |
         sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
         echo ${GOOGLEGEOCODE_API_KEY} >> ~/.Renviron
+        cat ~/.Renviron
+        
+    # Set-up R
+    - name: Install packages
+      run: |
         R -e 'install.packages("tidyverse")'
         R -e 'install.packages("jsonlite")'
         R -e 'install.packages("rvest")'
