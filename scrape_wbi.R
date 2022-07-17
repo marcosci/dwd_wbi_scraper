@@ -15,7 +15,7 @@ library(automap)
 library(ggplot2)
 library(rcartocolor)
 
-Sys.setenv(R_TEST = Sys.getenv('secret.GOOGLEGEOCODE_API_KEY'))
+Sys.setenv(GOOGLEGEOCODE_API_KEY = Sys.getenv('secret.GOOGLEGEOCODE_API_KEY'))
 
 counties_long <- c("Baden-Württemberg",
               "Bayern",
