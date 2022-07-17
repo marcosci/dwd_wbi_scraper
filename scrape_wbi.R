@@ -15,6 +15,8 @@ library(automap)
 library(ggplot2)
 library(rcartocolor)
 
+Sys.setenv(R_TEST = Sys.getenv('secret.GOOGLEGEOCODE_API_KEY'))
+
 counties_long <- c("Baden-Württemberg",
               "Bayern",
               "Berlin",
@@ -104,29 +106,63 @@ grid <- st_as_sfc(st_bbox(border))
 grid <- stars::st_as_stars(grid, dx = 0.010, dy = 0.010)
 grid <- grid[border]
 
+library(terra)
+temp_june <- terra::rast("/Users/marco/Downloads/grids_germany_daily_soil_temperature_5cm_202206/grids_germany_daily_soil_temperature_5cm_20220630.asc")
+nied_june <- terra::rast("/Users/marco/Downloads/grids_germany_daily_soil_moist_202206/grids_germany_daily_soil_moist_20220630.asc")
+
+cov_stack <- terra::rast(list(temp_june, nied_june))
+names(cov_stack) <- c("temp", "nied")
+crs_4326 <- "+proj=longlat +ellps=WGS84 +no_defs"
+crs_3857 <- "+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=3500000 +y_0=0 +ellps=bessel +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7 +units=m +no_defs"
+crs(cov_stack) <- crs_3857
+y <- project(cov_stack, crs_3857)
+z <- project(y, crs_4326)
+plot(z)
+plot(terra::vect(wbi_sf), add = TRUE)
+cov_sf <- cbind(wbi_sf, terra::extract(z, terra::vect(wbi_sf)))
+
+wbi_kriging <- cov_sf %>% 
+  filter(date == Sys.Date(),
+         !is.na(temp)) %>% 
+  st_transform(crs_4326) %>% 
+  as("Spatial")
+
+
+pred_grid <- st_as_stars(z)
+plot(pred_grid)
+
 # Ordinary Kriging:
-v_mod_ok <- wbi_sf %>% 
-  filter(date == Sys.Date()) %>% 
-  as("Spatial") %>% 
-  autofitVariogram(wbi ~ 1, .)
+v_mod_ok <- wbi_kriging %>% 
+  autofitVariogram(wbi ~ temp + nied, .)
 
-g <-  wbi_sf %>% 
-  filter(date == Sys.Date()) %>% 
-  as("Spatial") %>% 
-  gstat(formula = wbi ~ 1, model = v_mod_ok$var_model, data = .)
+plot(v_mod_ok)
+library(raster)
+y <- stack(z)
+z <- as(y, "SpatialGridDataFrame")
+plot(z)
+g <- wbi_kriging %>% 
+  krige(formula = wbi ~ temp + nied, ., z, model = v_mod_ok$var_model)
 
-z <- predict(g, grid)
+plot(st_as_stars(g))
 
+wbi_kriging %>% 
+  idw(formula = wbi ~  temp + nied, ., pred_grid, idp = 0.2) %>% 
+  plot()
+
+plot(pred_grid)
+
+#z <- predict(g, pred_grid)
 z <- z["var1.pred",,]
-names(z) <- "Waldbrandgefahrenindex"
+#names(z) <- "Waldbrandgefahrenindex"
 
 write_stars(z, "data/wbi_current.tif")
 
-# b <- seq(0, 5, 0.05)
-# plot(z, breaks = b, col = hcl.colors(length(b)-1, "Spectral", rev = TRUE), reset = FALSE)
-# plot(st_geometry(wbi_sf %>% 
-#                    filter(date == Sys.Date())), pch = 3, cex = 0.4, add = TRUE)
-# contour(z, breaks = b, add = TRUE)
+plot(z)
+b <- seq(-2.5, 2, 0.05)
+plot(z, breaks = b, col = hcl.colors(length(b)-1, "Spectral", rev = TRUE), reset = FALSE)
+plot(st_geometry(wbi_sf %>% 
+                    filter(date == Sys.Date())), pch = 3, cex = 0.4, add = TRUE)
+contour(z, breaks = b, add = TRUE)
 # 
 # 
 # ggplot() +
