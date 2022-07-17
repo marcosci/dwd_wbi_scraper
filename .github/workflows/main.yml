@@ -18,12 +18,6 @@ jobs:
     - name: Setup
       run: |
         sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
-        echo ${GOOGLEGEOCODE_API_KEY} >> ~/.Renviron
-        cat ~/.Renviron
-        
-    # Set-up R
-    - name: Install packages
-      run: |
         R -e 'install.packages("tidyverse")'
         R -e 'install.packages("jsonlite")'
         R -e 'install.packages("rvest")'
@@ -45,6 +39,8 @@ jobs:
     # Run R script
     - name: Scrape
       run: Rscript scrape_wbi.R
+      env:
+        GOOGLEGEOCODE_API_KEY: ${{ secrets.GOOGLEGEOCODE_API_KEY }}
       
  # Add new files in data folder, commit along with other modified files, push
     - name: Commit files
