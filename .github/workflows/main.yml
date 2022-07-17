@@ -18,7 +18,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
-        echo GOOGLEGEOCODE_API_KEY >> ~/.Renviron
+        echo $GOOGLEGEOCODE_API_KEY >> ~/.Renviron
         R -e 'install.packages("tidyverse")'
         R -e 'install.packages("jsonlite")'
         R -e 'install.packages("rvest")'
