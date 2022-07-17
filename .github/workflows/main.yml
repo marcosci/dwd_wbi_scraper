@@ -18,6 +18,8 @@ jobs:
     - name: Setup
       run: |
         sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+        R -e 'install.packages("devtools")'
+        R -e 'devtools::install_github("ropensci/rnaturalearthhires")'
         R -e 'install.packages("tidyverse")'
         R -e 'install.packages("jsonlite")'
         R -e 'install.packages("rvest")'
