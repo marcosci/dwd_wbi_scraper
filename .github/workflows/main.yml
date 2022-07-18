@@ -17,7 +17,7 @@ jobs:
     # Set-up 
     - name: Setup
       run: |
-        sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+        sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev unzip
         R -e 'install.packages("devtools")'
         R -e 'devtools::install_github("ropensci/rnaturalearthhires")'
         R -e 'install.packages("tidyverse")'
