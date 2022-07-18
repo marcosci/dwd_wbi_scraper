@@ -17,6 +17,7 @@ library(rcartocolor)
 
 
 Sys.setenv(GOOGLEGEOCODE_API_KEY = Sys.getenv('GOOGLEGEOCODE_API_KEY'))
+Sys.setenv(GITHUB_PAT = Sys.getenv('GITHUB_PAT'))
 
 
 counties_long <- c("Baden-Württemberg",
