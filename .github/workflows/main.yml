@@ -7,7 +7,7 @@ on:
 
 jobs: 
   autoscrape:
-    runs-on: ubuntu-latest
+    runs-on: rocker/geospatial
 
     # Load repo and install R
     steps:
@@ -43,6 +43,7 @@ jobs:
       run: Rscript scrape_wbi.R
       env:
         GOOGLEGEOCODE_API_KEY: ${{ secrets.GOOGLEGEOCODE_API_KEY }}
+        GITHUB_PAT:  ${{ secrets.GITHUB_TOKEN }}
       
  # Add new files in data folder, commit along with other modified files, push
     - name: Commit files
